@@ -17,7 +17,7 @@ public class Tetel implements Serializable{
     private Integer id;
 
     @Column
-    private Integer darabSzam;
+    private Integer darabSzam = 0;
 
     @ManyToOne
     private Termek termekId;
@@ -32,12 +32,12 @@ public class Tetel implements Serializable{
 
         Tetel tetel = (Tetel) o;
 
-        return id == tetel.id;
+        return id != null ? id.equals(tetel.id) : tetel.id == null;
     }
 
     @Override
     public int hashCode() {
-        return id;
+        return id != null ? id.hashCode() : 0;
     }
 
     public Integer getDarabSzam() {

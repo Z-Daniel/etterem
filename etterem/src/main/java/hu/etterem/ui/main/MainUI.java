@@ -6,13 +6,9 @@ import com.vaadin.annotations.Title;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.spring.navigator.SpringNavigator;
 import com.vaadin.spring.navigator.SpringViewProvider;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import hu.etterem.ui.error.ErrorView;
+import com.vaadin.ui.*;
+import hu.etterem.ui.error.EmptyView;
 import hu.etterem.ui.vasarlas.VasarlasView;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -28,24 +24,35 @@ public class MainUI extends UI {
     @Autowired
     private SpringViewProvider viewProvider;
 
+//    @Autowired
+//    private SpringNavigator navigator;
+
     @Override
     protected void init(VaadinRequest vaadinRequest) {
-        VerticalLayout root = new VerticalLayout();
+        HorizontalLayout root = new HorizontalLayout();
         root.setSizeFull();
         root.setMargin(true);
         root.setSpacing(true);
         setContent(root);
 
         Panel viewContainer = new Panel();
+        viewContainer.setWidth(90,Unit.PERCENTAGE);
         viewContainer.setSizeFull();
-        root.addComponent(viewContainer);
-        root.setExpandRatio(viewContainer, 1.0F);
-        root.addComponents(createNavigationButton(VasarlasView.CAPTION, VasarlasView.VIEW_NAME));
 
-        Navigator navigator = new SpringNavigator(this, viewContainer);
+        VerticalLayout menuLayout = new VerticalLayout();
+        menuLayout.setWidth(10,Unit.PERCENTAGE);
+        menuLayout.addComponent(createNavigationButton(VasarlasView.CAPTION, VasarlasView.VIEW_NAME));
+
+        root.addComponents(menuLayout,viewContainer);
+
+        Navigator navigator = new Navigator(this,viewContainer);
         navigator.addProvider(viewProvider);
-        navigator.setErrorView(ErrorView.class);
+        navigator.navigateTo(EmptyView.VIEW_NAME);
         setNavigator(navigator);
+
+//        navigator.init(this,viewContainer);
+//        navigator.addView("error",ErrorView.class);
+//        setNavigator(navigator);
 
     }
 
