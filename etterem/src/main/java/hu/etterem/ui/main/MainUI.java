@@ -45,6 +45,7 @@ public class MainUI extends UI {
 
         root.addComponents(menuLayout,viewContainer);
 
+        //név alapján navigál a view-ok között
         Navigator navigator = new Navigator(this,viewContainer);
         navigator.addProvider(viewProvider);
         navigator.navigateTo(EmptyView.VIEW_NAME);

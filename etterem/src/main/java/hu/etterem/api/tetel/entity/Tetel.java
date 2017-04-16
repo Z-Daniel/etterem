@@ -11,9 +11,11 @@ import java.io.Serializable;
  */
 @Entity
 @Table
-public class Tetel implements Serializable{
+public class Tetel implements Serializable {
 
     @Id
+    @GeneratedValue(generator = "tetel_seq",strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "tetel_seq",sequenceName = "tetel_seq")
     private Integer id;
 
     @Column
@@ -25,6 +27,14 @@ public class Tetel implements Serializable{
     @ManyToOne
     private Vasarlas vasarlasId;
 
+    //az adatbázisba be nem kerülő field
+    @Transient
+    private double internalId = generateInternalId();
+
+    private double generateInternalId() {
+        return Math.random() * 10000;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -32,12 +42,18 @@ public class Tetel implements Serializable{
 
         Tetel tetel = (Tetel) o;
 
+        if (Double.compare(tetel.internalId, internalId) != 0) return false;
         return id != null ? id.equals(tetel.id) : tetel.id == null;
     }
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        int result;
+        long temp;
+        result = id != null ? id.hashCode() : 0;
+        temp = Double.doubleToLongBits(internalId);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
     }
 
     public Integer getDarabSzam() {
@@ -72,5 +88,9 @@ public class Tetel implements Serializable{
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public double getInternalId() {
+        return internalId;
     }
 }
