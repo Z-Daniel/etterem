@@ -1,9 +1,8 @@
 package hu.etterem.api.dolgozo.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -14,6 +13,10 @@ import java.io.Serializable;
 public class Dolgozo implements Serializable {
 
     @Id
+    @GenericGenerator(name = "dolgozo_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+            parameters = {@org.hibernate.annotations.Parameter(name = "dolgozo_seq", value = "dolgozo_seq"),
+                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")})
+    @GeneratedValue(generator = "dolgozo_seq", strategy = GenerationType.SEQUENCE)
     private Integer id;
 
     @Column(name = "DOLGOZO_NEV")

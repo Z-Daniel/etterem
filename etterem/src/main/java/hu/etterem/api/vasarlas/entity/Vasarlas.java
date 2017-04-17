@@ -3,6 +3,7 @@ package hu.etterem.api.vasarlas.entity;
 import hu.etterem.api.dolgozo.entity.Dolgozo;
 import hu.etterem.api.termek.entity.Termek;
 import hu.etterem.api.tetel.entity.Tetel;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -13,10 +14,14 @@ import java.util.*;
  */
 @Entity
 @Table
-public class Vasarlas implements Serializable{
-    @Id
-    @GeneratedValue(generator = "vasarlas_seq",strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(name = "vasarlas_seq",sequenceName = "vasarlas_seq")
+public class Vasarlas implements Serializable {
+
+    @javax.persistence.Id
+    @GenericGenerator(name = "vasarlas_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+            parameters = {@org.hibernate.annotations.Parameter(name = "vasarlas_seq", value = "vasarlas_seq"),
+                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")})
+    @GeneratedValue(generator = "vasarlas_seq", strategy = GenerationType.SEQUENCE)
+    @Column(unique = true,nullable = false)
     private Integer id;
 
     @Column(name = "VEGOSSZEG")
@@ -29,7 +34,8 @@ public class Vasarlas implements Serializable{
     @ManyToOne
     private Dolgozo dolgozoId;
 
-    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true) //orphanRemoval --> így nem létezhet tétel a vásárlás nélkül (törli őket, ha a vásárlást törlik)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "vasarlasId")
+    //orphanRemoval --> így nem létezhet tétel a vásárlás nélkül (törli őket, ha a vásárlást törlik)
     private Set<Tetel> tetelekSet = new HashSet<>();
 
     @Override
@@ -39,19 +45,19 @@ public class Vasarlas implements Serializable{
 
         Vasarlas vasarlas = (Vasarlas) o;
 
-        return id == vasarlas.id;
+        return id != null ? id.equals(vasarlas.id) : vasarlas.id == null;
     }
 
     @Override
     public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

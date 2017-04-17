@@ -2,6 +2,7 @@ package hu.etterem.api.tetel.entity;
 
 import hu.etterem.api.termek.entity.Termek;
 import hu.etterem.api.vasarlas.entity.Vasarlas;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -13,9 +14,12 @@ import java.io.Serializable;
 @Table
 public class Tetel implements Serializable {
 
-    @Id
-    @GeneratedValue(generator = "tetel_seq",strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(name = "tetel_seq",sequenceName = "tetel_seq")
+    @javax.persistence.Id
+    @GenericGenerator(name = "tetel_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+            parameters = {@org.hibernate.annotations.Parameter(name = "tetel_seq", value = "tetel_seq"),
+                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")})
+    @GeneratedValue(generator = "tetel_seq", strategy = GenerationType.SEQUENCE)
+    @Column(unique = true,nullable = false)
     private Integer id;
 
     @Column
@@ -81,12 +85,11 @@ public class Tetel implements Serializable {
         this.vasarlasId = vasarlasId;
     }
 
-    public int getId() {
-
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
