@@ -25,7 +25,7 @@ public class Tetel implements Serializable {
 
     @Column
     @Min(value = 1,message = "Csak nullánál nagyobb darabszámú tétel vehető fel!")
-    private Integer darabSzam = 0;
+    private Integer darabSzam = 1;
 
     @ManyToOne
     private Termek termekId;
