@@ -54,17 +54,21 @@ public class VasarlasView extends VerticalLayout implements View {
         HorizontalLayout buttonsLayout;
         Button hozzaad;
         Button torles;
+        Button mentes;
+        Grid grid;
 
         VerticalLayout root = new VerticalLayout(
                 fieldsLayout = new HorizontalLayout(
-                    termekId = new ComboBox(),
                     dolgozoId = new ComboBox(),
+                    termekId = new ComboBox(),
                     darabSzam = new TextField("Darabszám: ")
                 ),
                 buttonsLayout = new HorizontalLayout(
                     hozzaad = new Button("Hozzáadás"),
                     torles = new Button("Törlés")
-                )
+                ),
+                grid = new Grid(),
+                mentes = new Button("Mentés")
         );
 
         termekId.setCaption("Termék: ");
@@ -99,7 +103,6 @@ public class VasarlasView extends VerticalLayout implements View {
             }
         });
 
-        Grid grid = new Grid();
         grid.addSelectionListener(selectionEvent -> {
             if (grid.getSelectedRow() != null) {
                 tetel = (Tetel) grid.getSelectedRow();
@@ -109,6 +112,7 @@ public class VasarlasView extends VerticalLayout implements View {
                 bind();
             }
         });
+
         grid.setSelectionMode(Grid.SelectionMode.SINGLE);
         grid.setContainerDataSource(container);
         grid.removeAllColumns();
@@ -116,7 +120,6 @@ public class VasarlasView extends VerticalLayout implements View {
         grid.addColumn("termekId").setHeaderCaption("Termék");
         root.addComponents(grid);
 
-        Button mentes = new Button("Mentés");
         mentes.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
@@ -141,15 +144,13 @@ public class VasarlasView extends VerticalLayout implements View {
                 Notification.show("A vásárlás sikeres és rögzítésre került.", Notification.Type.HUMANIZED_MESSAGE);
             }
         });
-        root.addComponents(mentes);
 
-        addComponents(dolgozoId, root);
+        addComponents(root);
     }
 
     private void bind() {
         fieldGroup.setItemDataSource(tetel);
         fieldGroup.bind(termekId, "termekId");
-       // fieldGroup.bind(dolgozoId,"dolgozoId");
         fieldGroup.bind(darabSzam, "darabSzam");
     }
 
