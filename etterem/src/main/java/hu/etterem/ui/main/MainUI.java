@@ -51,10 +51,6 @@ public class MainUI extends UI {
         navigator.navigateTo(EmptyView.VIEW_NAME);
         setNavigator(navigator);
 
-//        navigator.init(this,viewContainer);
-//        navigator.addView("error",ErrorView.class);
-//        setNavigator(navigator);
-
     }
 
     private Button createNavigationButton(String caption, String viewName) {
