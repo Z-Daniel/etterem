@@ -50,26 +50,34 @@ public class VasarlasView extends VerticalLayout implements View {
 
         BeanItemContainer<Tetel> container = new BeanItemContainer<Tetel>(Tetel.class);
 
-        termekId = new ComboBox();
+        HorizontalLayout fieldsLayout;
+        HorizontalLayout buttonsLayout;
+        Button hozzaad;
+        Button torles;
+
+        VerticalLayout root = new VerticalLayout(
+                fieldsLayout = new HorizontalLayout(
+                    termekId = new ComboBox(),
+                    dolgozoId = new ComboBox(),
+                    darabSzam = new TextField("Darabszám: ")
+                ),
+                buttonsLayout = new HorizontalLayout(
+                    hozzaad = new Button("Hozzáadás"),
+                    torles = new Button("Törlés")
+                )
+        );
+
         termekId.setCaption("Termék: ");
         termekId.addItems(termekRepository.findAll());
 
-        dolgozoId = new ComboBox();
         dolgozoId.setCaption("Vásárló: ");
         dolgozoId.addItems(dolgozoRepository.findAll());
-
-        darabSzam = new TextField("Darabszám: ");
-
-        VerticalLayout root = new VerticalLayout();
-        HorizontalLayout fieldsLayout = new HorizontalLayout();
-        fieldsLayout.addComponents(dolgozoId,termekId,darabSzam);
-        root.addComponents(fieldsLayout);
 
         //hozzárendeli az objektum fieldjeit a textfieldekhez (ezt minden új példányosításnál meg kell tenni)
         fieldGroup = new BeanFieldGroup<>(Tetel.class);
         bind();
 
-        Button hozzaad = new Button("Hozzáadás");
+
         hozzaad.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
@@ -84,17 +92,12 @@ public class VasarlasView extends VerticalLayout implements View {
                 }
             }
         });
-        HorizontalLayout buttonsLayout = new HorizontalLayout();
-        buttonsLayout.addComponent(hozzaad);
 
-        Button torles = new Button("Törlés");
         torles.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent clickEvent) {
                 container.removeItem(tetel);
             }
         });
-        buttonsLayout.addComponent(torles);
-        root.addComponent(buttonsLayout);
 
         Grid grid = new Grid();
         grid.addSelectionListener(selectionEvent -> {
