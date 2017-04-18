@@ -5,6 +5,7 @@ import hu.etterem.api.vasarlas.entity.Vasarlas;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import java.io.Serializable;
 
 /**
@@ -23,6 +24,7 @@ public class Tetel implements Serializable {
     private Integer id;
 
     @Column
+    @Min(value = 1,message = "Csak nullánál nagyobb darabszámú tétel vehető fel!")
     private Integer darabSzam = 0;
 
     @ManyToOne

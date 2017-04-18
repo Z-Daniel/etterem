@@ -63,4 +63,9 @@ public class Termek implements Serializable{
     public void setAr(Integer ar) {
         this.ar = ar;
     }
+
+    @Override
+    public String toString() {
+        return nev;
+    }
 }

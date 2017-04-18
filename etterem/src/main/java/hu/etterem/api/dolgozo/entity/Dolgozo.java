@@ -52,4 +52,9 @@ public class Dolgozo implements Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return nev;
+    }
 }
