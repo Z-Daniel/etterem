@@ -127,8 +127,8 @@ public class VasarlasView extends VerticalLayout implements View {
         tetelekGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
         tetelekGrid.setContainerDataSource(container);
         tetelekGrid.removeAllColumns();
-        tetelekGrid.addColumn("darabSzam").setHeaderCaption("Darabszám");
         tetelekGrid.addColumn("termekId").setHeaderCaption("Termék");
+        tetelekGrid.addColumn("darabSzam").setHeaderCaption("Darabszám");
         tetelekGrid.setWidth("100%");
         root.setComponentAlignment(gombokEsGridLayout,Alignment.MIDDLE_CENTER);
         tetelGombokLayout.setWidth("100%");
