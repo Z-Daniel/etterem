@@ -5,8 +5,10 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ValoTheme;
 import hu.etterem.api.dolgozo.entity.Dolgozo;
 import hu.etterem.api.termek.entity.Termek;
 import hu.etterem.api.tetel.entity.Tetel;
@@ -30,7 +32,7 @@ import java.util.Date;
 public class VasarlasView extends VerticalLayout implements View {
 
     public static final String VIEW_NAME = "VASARLAS_VIEW";
-    public static final String CAPTION = "VÁSÁRLÁS";
+    public static final String CAPTION = "Vásárlás";
     private Tetel tetel = new Tetel();
     private BeanFieldGroup<Tetel> fieldGroup;
     private ComboBox dolgozoId;
@@ -59,6 +61,7 @@ public class VasarlasView extends VerticalLayout implements View {
         Button mentes;
         Button osszesTorlese;
         Grid tetelekGrid;
+        VerticalLayout gombokEsGridLayout;
 
         VerticalLayout root = new VerticalLayout(
                 formLayout = new HorizontalLayout(
@@ -66,14 +69,16 @@ public class VasarlasView extends VerticalLayout implements View {
                     termekId = new ComboBox(),
                     darabSzam = new TextField("Darabszám: ")
                 ),
-                tetelGombokLayout = new HorizontalLayout(
-                    hozzaad = new Button("Hozzáadás"),
-                    torles = new Button("Törlés")
-                ),
-                tetelekGrid = new Grid("A felvett tételek: "),
-                globalGombokLayout = new HorizontalLayout(
-                    mentes = new Button("Mentés"),
-                    osszesTorlese = new Button("Összes törlése")
+                gombokEsGridLayout = new VerticalLayout(
+                    tetelGombokLayout = new HorizontalLayout(
+                        hozzaad = new Button("Hozzáadás"),
+                        torles = new Button("Törlés")
+                    ),
+                    tetelekGrid = new Grid("A felvett tételek: "),
+                    globalGombokLayout = new HorizontalLayout(
+                       mentes = new Button("Mentés"),
+                       osszesTorlese = new Button("Összes törlése")
+                    )
                 )
         );
 
@@ -85,6 +90,7 @@ public class VasarlasView extends VerticalLayout implements View {
 
         //hozzárendeli az objektum fieldjeit a textfieldekhez (ezt minden új példányosításnál meg kell tenni)
         fieldGroup = new BeanFieldGroup<>(Tetel.class);
+        formLayout.setWidth("100%");
         bind();
 
         hozzaad.addClickListener(new Button.ClickListener() {
@@ -123,6 +129,17 @@ public class VasarlasView extends VerticalLayout implements View {
         tetelekGrid.removeAllColumns();
         tetelekGrid.addColumn("darabSzam").setHeaderCaption("Darabszám");
         tetelekGrid.addColumn("termekId").setHeaderCaption("Termék");
+        tetelekGrid.setWidth("100%");
+        root.setComponentAlignment(gombokEsGridLayout,Alignment.MIDDLE_CENTER);
+        tetelGombokLayout.setWidth("100%");
+        tetelGombokLayout.setComponentAlignment(torles,Alignment.MIDDLE_RIGHT);
+        root.setComponentAlignment(formLayout,Alignment.MIDDLE_CENTER);
+        formLayout.setComponentAlignment(darabSzam,Alignment.MIDDLE_RIGHT);
+        formLayout.setComponentAlignment(termekId,Alignment.MIDDLE_CENTER);
+        formLayout.setComponentAlignment(dolgozoId,Alignment.MIDDLE_LEFT);
+        globalGombokLayout.setWidth("100%");
+        globalGombokLayout.setComponentAlignment(osszesTorlese,Alignment.MIDDLE_RIGHT);
+        gombokEsGridLayout.setWidth("90%");
 
         mentes.addClickListener(new Button.ClickListener() {
             @Override
@@ -155,8 +172,8 @@ public class VasarlasView extends VerticalLayout implements View {
             }
         });
 
+        globalGombokLayout.setComponentAlignment(osszesTorlese,Alignment.MIDDLE_RIGHT);
         root.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        root.setWidth("70%");
         addComponents(root);
     }
 

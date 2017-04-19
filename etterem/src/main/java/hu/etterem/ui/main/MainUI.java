@@ -9,6 +9,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.*;
 import hu.etterem.ui.error.EmptyView;
+import hu.etterem.ui.report.JelentesView;
 import hu.etterem.ui.vasarlas.VasarlasView;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -42,6 +43,7 @@ public class MainUI extends UI {
         VerticalLayout menuLayout = new VerticalLayout();
         menuLayout.setWidth(10,Unit.PERCENTAGE);
         menuLayout.addComponent(createNavigationButton(VasarlasView.CAPTION, VasarlasView.VIEW_NAME));
+        menuLayout.addComponent(createNavigationButton(JelentesView.CAPTION, JelentesView.VIEW_NAME));
 
         root.addComponents(menuLayout,viewContainer);
 
