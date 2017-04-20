@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -27,6 +28,7 @@ public class Tetel implements Serializable {
     @Min(value = 1,message = "Csak nullánál nagyobb darabszámú tétel vehető fel!")
     private Integer darabSzam = 1;
 
+    @NotNull// kötelező legyen kitölteni
     @ManyToOne
     private Termek termekId;
 

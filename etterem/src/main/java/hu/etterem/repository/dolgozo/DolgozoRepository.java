@@ -2,7 +2,6 @@ package hu.etterem.repository.dolgozo;
 
 
 import hu.etterem.api.dolgozo.entity.Dolgozo;
-import hu.etterem.riportEredm.DolgozoRiport;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,5 +17,5 @@ import java.util.List;
 public interface DolgozoRepository extends JpaRepository<Dolgozo, Integer> {
 
     @Query(value = "SELECT d.dolgozo_nev, SUM(v.vegosszeg) FROM dolgozo d INNER JOIN vasarlas v ON d.id = v.dolgozo_id_id WHERE v.vasarlas_datum BETWEEN :curDate AND :endDate GROUP BY d.dolgozo_nev;", nativeQuery = true)
-    List<DolgozoRiport> dolgozokFogyasztas(@Param("curDate") Date curDate, @Param("endDate") Date endDate );
+    List<Object[]> dolgozokFogyasztas(@Param("curDate") Date curDate, @Param("endDate") Date endDate );// magyarázat a viewban
 }

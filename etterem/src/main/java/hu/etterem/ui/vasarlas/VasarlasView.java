@@ -151,8 +151,7 @@ public class VasarlasView extends VerticalLayout implements View {
                 //végösszeg kiszámítása úgy, hogy kikeresi a termék táblából a tételhez rendelt termék alapján az egységárat, beszorozza a tételhez tartozó mennyiséggel és hozzáadja a végösszeghez
                 Integer vegosszeg = 0;
                 for (Tetel curTetel : vasarlas.getTetelekSet()) {
-                    Termek curTerm = termekRepository.findOne(curTetel.getTermekId().getId());
-                    vegosszeg += curTetel.getDarabSzam() * curTerm.getAr();
+                    vegosszeg += curTetel.getDarabSzam() * curTetel.getTermekId().getAr();// nem kell felolvasni db-ből a tételben benne van a termék
                 }
 
                 vasarlas.setVegosszeg(vegosszeg);

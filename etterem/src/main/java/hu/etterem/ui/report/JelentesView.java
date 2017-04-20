@@ -13,10 +13,9 @@ import hu.etterem.riportEredm.DolgozoRiport;
 import hu.etterem.ui.main.MainUI;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.awt.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Murdoc on 4/19/2017.
@@ -34,13 +33,11 @@ public class JelentesView extends VerticalLayout implements View {
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
 
-        HorizontalLayout riportGombok;
         Button dolgozoFogyaszt;
         Button termekFogyaszt;
-        BeanItemContainer<DolgozoRiport> container = new BeanItemContainer<DolgozoRiport>(DolgozoRiport.class);
 
         VerticalLayout root = new VerticalLayout(
-                riportGombok = new HorizontalLayout(
+               new HorizontalLayout(
                         dolgozoFogyaszt = new Button("Dolgozók fogyasztása"),
                         termekFogyaszt = new Button("Termékek fogyása")
                 ),
@@ -56,20 +53,21 @@ public class JelentesView extends VerticalLayout implements View {
                 } else {
                     riportGrid = new Grid();
                 }
+                BeanItemContainer<DolgozoRiport> container = new BeanItemContainer<>(DolgozoRiport.class);
+                riportGrid.setContainerDataSource(container);
                 root.addComponent(riportGrid);
-                riportGrid.addColumn("dolgozoId").setHeaderCaption("Dolgozó");
-                riportGrid.addColumn("fogyasztas").setHeaderCaption("Havi fogyasztás");
+                riportGrid.getColumn("dolgozoNev").setHeaderCaption("Dolgozó név");
+                riportGrid.getColumn("fogyasztas").setHeaderCaption("Havi fogyasztás");
 
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-");
+//                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-");
                 Calendar c = Calendar.getInstance();
                 Date curDate = c.getTime();
-                curDate.setDate(1);
+                curDate.setDate(1);//FIXME írd át calendar-ra
                 c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
                 Date endDate = c.getTime();
 
-                java.util.List<DolgozoRiport> asd = dolgozoRepository.dolgozokFogyasztas(curDate, endDate);
-                container.addAll(asd);
-                riportGrid.setContainerDataSource(container);
+                List<Object[]> asd = dolgozoRepository.dolgozokFogyasztas(curDate, endDate);//Objektum tömbök vannak a listában, egy objektum tömb egy sor a tömb elemei az oszlopok
+                asd.forEach(objects -> container.addItem(new DolgozoRiport(objects[0].toString(), Integer.valueOf(objects[1].toString()))));
             }
         });
 
@@ -83,8 +81,8 @@ public class JelentesView extends VerticalLayout implements View {
                     riportGrid = new Grid();
                 }
                 root.addComponent(riportGrid);
-                riportGrid.addColumn("termekId").setHeaderCaption("Termékek");
-                riportGrid.addColumn("vegosszeg").setHeaderCaption("Havi fogyás");
+                riportGrid.getColumn("termekId").setHeaderCaption("Termékek");//az oszlopok azonosítói a gridben lévő datasource objektumának mezői!
+                riportGrid.getColumn("vegosszeg").setHeaderCaption("Havi fogyás");
 
             }
         });
