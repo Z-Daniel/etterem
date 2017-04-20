@@ -17,6 +17,6 @@ import java.util.List;
 @Repository
 public interface DolgozoRepository extends JpaRepository<Dolgozo, Integer> {
 
-    @Query(value = "SELECT d.dolgozo_nev, SUM(v.vegosszeg) FROM dolgozo d INNER JOIN vasarlas v ON d.id = v.dolgozo_id_id GROUP BY d.dolgozo_nev;", nativeQuery = true)
-    List<DolgozoRiport> dolgozokFogyasztas(); //@Param("curDate") Date curDate, @Param("endDate") Date endDate WHERE v.vasarlas_datum BETWEEN :curDate AND :endDate
+    @Query(value = "SELECT d.dolgozo_nev, SUM(v.vegosszeg) FROM dolgozo d INNER JOIN vasarlas v ON d.id = v.dolgozo_id_id WHERE v.vasarlas_datum BETWEEN :curDate AND :endDate GROUP BY d.dolgozo_nev;", nativeQuery = true)
+    List<DolgozoRiport> dolgozokFogyasztas(@Param("curDate") Date curDate, @Param("endDate") Date endDate );
 }

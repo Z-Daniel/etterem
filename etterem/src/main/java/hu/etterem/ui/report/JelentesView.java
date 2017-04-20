@@ -63,11 +63,11 @@ public class JelentesView extends VerticalLayout implements View {
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-");
                 Calendar c = Calendar.getInstance();
                 Date curDate = c.getTime();
+                curDate.setDate(1);
                 c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
                 Date endDate = c.getTime();
 
-                java.util.List<DolgozoRiport> asd = dolgozoRepository.dolgozokFogyasztas();//curDate, endDate
-
+                java.util.List<DolgozoRiport> asd = dolgozoRepository.dolgozokFogyasztas(curDate, endDate);
                 container.addAll(asd);
                 riportGrid.setContainerDataSource(container);
             }
