@@ -62,7 +62,7 @@ public class JelentesView extends VerticalLayout implements View {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 riportList = new ArrayList<RiportEredm>();
-                if(radioGombok.getValue() == "Dolgozó riport"){
+                if(radioGombok.getValue() == "Dolgozó riport"){//FIXME
                     riportGrid.removeAllColumns();
 
                     BeanItemContainer<RiportEredm> container = new BeanItemContainer<>(RiportEredm.class);
@@ -75,8 +75,8 @@ public class JelentesView extends VerticalLayout implements View {
                     setCommonGridPorps();
 
                     List<Object[]> objectList = getObjectList(radioGombok.getValue().toString());//Objektum tömbök vannak a listában, egy objektum tömb egy sor a tömb elemei az oszlopok
-                    objectList.forEach(objects -> container.addItem(new RiportEredm(objects[0].toString(), Integer.valueOf(objects[1].toString()))));
-                }else if(radioGombok.getValue() == "Termék riport"){
+                    objectList.forEach(objects -> container.addItem(new RiportEredm(objects[0].toString(), Integer.valueOf(objects[1].toString()))));//FIXME nullpointer lehet a metódus megírásod miatt elég az else if egyelőre..
+                }else if(radioGombok.getValue() == "Termék riport"){//FIXME
                     riportGrid.removeAllColumns();
 
                     BeanItemContainer<RiportEredm> container = new BeanItemContainer<>(RiportEredm.class);
@@ -88,7 +88,7 @@ public class JelentesView extends VerticalLayout implements View {
                     setCommonGridPorps();
 
                     List<Object[]> objectList = getObjectList(radioGombok.getValue().toString());
-                    objectList.forEach(objects -> container.addItem(new RiportEredm(objects[0].toString(), Integer.valueOf(objects[1].toString()))));
+                    objectList.forEach(objects -> container.addItem(new RiportEredm(objects[0].toString(), Integer.valueOf(objects[1].toString()))));//FIXME
                 }
             }
         });
@@ -112,7 +112,7 @@ public class JelentesView extends VerticalLayout implements View {
     }
 
     private List<Object[]> getObjectList(String riportTipus){
-        if (riportTipus == "Dolgozó riport"){
+        if (riportTipus == "Dolgozó riport"){//FIXME Stringet/objektumokat equalssal hasonlítunk össze mindig!!!!
             return dolgozoRepository.dolgozokFogyasztas(getStartDate(), getEndDate());
         }else if(riportTipus == "Termék riport"){
             return termekRepository.termekekFogyasa(getStartDate(), getEndDate());
