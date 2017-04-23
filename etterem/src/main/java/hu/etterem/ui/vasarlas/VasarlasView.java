@@ -26,7 +26,6 @@ import java.util.List;
 
 /**
  * Created by Murdoc on 4/14/2017.
- * TODO Workaround a módosítás bugolása miatt
  * TODO Annak az esetleges kezelése, hogy egy termékfajtát többször adnak a gridhez
  */
 @SpringView(name = VasarlasView.VIEW_NAME, ui = MainUI.class)
@@ -46,6 +45,8 @@ public class VasarlasView extends VerticalLayout implements View {
     private ComboBox termekId;
 
     private TextField darabSzam;
+
+    private boolean found = false;
 
     private VerticalLayout root;
     private Grid tetelekGrid;
@@ -80,7 +81,7 @@ public class VasarlasView extends VerticalLayout implements View {
                 ),
                 gombokEsGridLayout = new VerticalLayout(
                     tetelGombokLayout = new HorizontalLayout(
-                        hozzaad = new Button("Hozzáadás"),
+                        hozzaad = new Button("Hozzáadás/Módosítás"),
                         torles = new Button("Törlés")
                     ),
                     tetelekGrid = new Grid("A felvett tételek: "),
@@ -106,12 +107,24 @@ public class VasarlasView extends VerticalLayout implements View {
             public void buttonClick(Button.ClickEvent clickEvent) {
                 try {
                     fieldGroup.commit();
-//                    List<Tetel> gridList = new ArrayList<>();
-//                    tetelekGrid.forEach(tetel1 -> gridList.add((Tetel) tetel1));
-//                    container = new BeanItemContainer<Tetel>(Tetel.class);
-//
-//                    tetelekGrid.setContainerDataSource(container);
-                    container.addItem(tetel);
+                    List<Tetel> validateList = new ArrayList<>();
+                    validateList.addAll(container.getItemIds());
+                    validateList.forEach(curTetel -> {
+                        if(curTetel.getTermekId() == tetel.getTermekId()){
+                            curTetel.setDarabSzam(curTetel.getDarabSzam() + tetel.getDarabSzam());
+                            found = true;
+                        }
+                    });
+                    if (!found){
+                        container.addItem(tetel);
+                    }else{
+                        found = false;
+                    }
+                    tetelekGrid.setContainerDataSource(container);
+                    List<Tetel> gridList = new ArrayList<>();
+                    gridList.addAll(container.getItemIds());
+                    container = new BeanItemContainer<Tetel>(Tetel.class);
+                    gridList.forEach(curTetel -> container.addItem(curTetel));
                     tetel = new Tetel();
                     bind();
                 } catch (FieldGroup.CommitException e) {
@@ -145,23 +158,27 @@ public class VasarlasView extends VerticalLayout implements View {
         mentes.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                Vasarlas vasarlas = new Vasarlas();
-                vasarlas.getTetelekSet().addAll((Collection<? extends Tetel>) tetelekGrid.getContainerDataSource().getItemIds());
-                vasarlas.getTetelekSet().forEach(tetel1 -> tetel1.setVasarlasId(vasarlas)); //azért kell mert a tételek (külön) táblába mentjük a tételeket, ahol jelölni kell, hogy melyik vásárláshoz tartoznak
+                if(!dolgozoId.isEmpty()) {
+                    Vasarlas vasarlas = new Vasarlas();
+                    vasarlas.getTetelekSet().addAll((Collection<? extends Tetel>) tetelekGrid.getContainerDataSource().getItemIds());
+                    vasarlas.getTetelekSet().forEach(tetel1 -> tetel1.setVasarlasId(vasarlas)); //azért kell mert a tételek (külön) táblába mentjük a tételeket, ahol jelölni kell, hogy melyik vásárláshoz tartoznak
 
-                //végösszeg kiszámítása úgy, hogy kikeresi a termék táblából a tételhez rendelt termék alapján az egységárat, beszorozza a tételhez tartozó mennyiséggel és hozzáadja a végösszeghez
-                Integer vegosszeg = 0;
-                for (Tetel curTetel : vasarlas.getTetelekSet()) {
-                    vegosszeg += curTetel.getDarabSzam() * curTetel.getTermekId().getAr();// nem kell felolvasni db-ből a tételben benne van a termék
+                    //végösszeg kiszámítása úgy, hogy kikeresi a termék táblából a tételhez rendelt termék alapján az egységárat, beszorozza a tételhez tartozó mennyiséggel és hozzáadja a végösszeghez
+                    Integer vegosszeg = 0;
+                    for (Tetel curTetel : vasarlas.getTetelekSet()) {
+                        vegosszeg += curTetel.getDarabSzam() * curTetel.getTermekId().getAr();// nem kell felolvasni db-ből a tételben benne van a termék
+                    }
+
+                    vasarlas.setVegosszeg(vegosszeg);
+                    vasarlas.setDolgozoId((Dolgozo) dolgozoId.getValue());
+                    vasarlas.setVasarlasDatuma(new Date());
+
+                    vasarlasRepository.save(vasarlas);
+                    tetelekGrid.getContainerDataSource().removeAllItems();
+                    Notification.show("A vásárlás sikeres és rögzítésre került.", Notification.Type.HUMANIZED_MESSAGE);
+                }else{
+                    Notification.show("Válasszon dolgozót a vásárláshoz!",Notification.TYPE_HUMANIZED_MESSAGE);
                 }
-
-                vasarlas.setVegosszeg(vegosszeg);
-                vasarlas.setDolgozoId((Dolgozo) dolgozoId.getValue());
-                vasarlas.setVasarlasDatuma(new Date());
-
-                vasarlasRepository.save(vasarlas);
-                tetelekGrid.getContainerDataSource().removeAllItems();
-                Notification.show("A vásárlás sikeres és rögzítésre került.", Notification.Type.HUMANIZED_MESSAGE);
             }
         });
 

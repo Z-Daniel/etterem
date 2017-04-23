@@ -32,7 +32,6 @@ public class Vasarlas implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date vasarlasDatuma;
 
-    @NotNull
     @ManyToOne
     private Dolgozo dolgozoId;
 
