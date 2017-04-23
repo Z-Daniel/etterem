@@ -6,6 +6,7 @@ import hu.etterem.api.tetel.entity.Tetel;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.*;
 
@@ -31,6 +32,7 @@ public class Vasarlas implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date vasarlasDatuma;
 
+    @NotNull
     @ManyToOne
     private Dolgozo dolgozoId;
 

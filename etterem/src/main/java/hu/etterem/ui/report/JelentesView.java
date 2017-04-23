@@ -53,7 +53,8 @@ public class JelentesView extends VerticalLayout implements View {
                 exportCSV = new Button("Export"),
                 riportGrid = new Grid()
         );
-        setCommonGridPorps();
+        riportGrid.setSelectionMode(Grid.SelectionMode.NONE);
+        riportGrid.setSizeFull();
         radioGombok.addItem("Dolgozó riport");
         radioGombok.addItem("Termék riport");
         radioGombok.setValue("Dolgozó riport");
@@ -62,33 +63,24 @@ public class JelentesView extends VerticalLayout implements View {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 riportList = new ArrayList<RiportEredm>();
-                if(radioGombok.getValue() == "Dolgozó riport"){//FIXME
+                if(radioGombok.getValue().equals("Dolgozó riport")){
                     riportGrid.removeAllColumns();
 
                     BeanItemContainer<RiportEredm> container = new BeanItemContainer<>(RiportEredm.class);
                     riportGrid.setContainerDataSource(container);
-                    riportGrid.getColumn("nev").setHeaderCaption("Dolgozó név");
-                    riportGrid.getColumn("mennyiseg").setHeaderCaption("Havi fogyasztás");
-                    riportGrid.setSelectionMode(Grid.SelectionMode.NONE);
-                    riportGrid.setColumnOrder("nev","mennyiseg");
-                    root.addComponent(riportGrid);
-                    setCommonGridPorps();
+                    setupRiportGrid("Dolgozó név","Havi fogyasztás");
 
                     List<Object[]> objectList = getObjectList(radioGombok.getValue().toString());//Objektum tömbök vannak a listában, egy objektum tömb egy sor a tömb elemei az oszlopok
-                    objectList.forEach(objects -> container.addItem(new RiportEredm(objects[0].toString(), Integer.valueOf(objects[1].toString()))));//FIXME nullpointer lehet a metódus megírásod miatt elég az else if egyelőre..
-                }else if(radioGombok.getValue() == "Termék riport"){//FIXME
+                    objectList.forEach(objects -> container.addItem(new RiportEredm(objects[0].toString(), Integer.valueOf(objects[1].toString()))));
+                }else if(radioGombok.getValue().equals("Termék riport")){
                     riportGrid.removeAllColumns();
 
                     BeanItemContainer<RiportEredm> container = new BeanItemContainer<>(RiportEredm.class);
                     riportGrid.setContainerDataSource(container);
-                    riportGrid.getColumn("nev").setHeaderCaption("Termékek");//az oszlopok azonosítói a gridben lévő datasource objektumának mezői
-                    riportGrid.getColumn("mennyiseg").setHeaderCaption("Havi fogyás");
-                    riportGrid.setColumnOrder("nev","mennyiseg");
-                    root.addComponent(riportGrid);
-                    setCommonGridPorps();
+                    setupRiportGrid("Termékek","Havi fogyasztás");
 
                     List<Object[]> objectList = getObjectList(radioGombok.getValue().toString());
-                    objectList.forEach(objects -> container.addItem(new RiportEredm(objects[0].toString(), Integer.valueOf(objects[1].toString()))));//FIXME
+                    objectList.forEach(objects -> container.addItem(new RiportEredm(objects[0].toString(), Integer.valueOf(objects[1].toString()))));
                 }
             }
         });
@@ -112,12 +104,22 @@ public class JelentesView extends VerticalLayout implements View {
     }
 
     private List<Object[]> getObjectList(String riportTipus){
-        if (riportTipus == "Dolgozó riport"){//FIXME Stringet/objektumokat equalssal hasonlítunk össze mindig!!!!
+        if (riportTipus.equals("Dolgozó riport")){
             return dolgozoRepository.dolgozokFogyasztas(getStartDate(), getEndDate());
-        }else if(riportTipus == "Termék riport"){
+        }else{
             return termekRepository.termekekFogyasa(getStartDate(), getEndDate());
         }
-        return null;
+    }
+
+    private void setupRiportGrid(String elsoOszlopNeve, String masodikOszlopNeve){
+        riportGrid.getColumn("nev").setHeaderCaption(elsoOszlopNeve);//az oszlopok azonosítói a gridben lévő datasource objektumának mezői
+        riportGrid.getColumn("mennyiseg").setHeaderCaption(masodikOszlopNeve);
+        riportGrid.setSelectionMode(Grid.SelectionMode.NONE);
+        riportGrid.setColumnOrder("nev","mennyiseg");
+        root.addComponent(riportGrid);
+        riportGrid.setSelectionMode(Grid.SelectionMode.NONE);
+        riportGrid.setSizeFull();
+        root.setComponentAlignment(riportGrid, Alignment.MIDDLE_CENTER);
     }
 
     private String csvContentAdapter() {
@@ -150,9 +152,4 @@ public class JelentesView extends VerticalLayout implements View {
         return c.getTime();
     }
 
-    private void setCommonGridPorps(){
-        riportGrid.setSelectionMode(Grid.SelectionMode.NONE);
-        riportGrid.setSizeFull();
-        root.setComponentAlignment(riportGrid, Alignment.MIDDLE_CENTER);
-    }
 }
