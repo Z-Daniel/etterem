@@ -125,6 +125,7 @@ public class VasarlasView extends VerticalLayout implements View {
                     gridList.addAll(container.getItemIds());
                     container = new BeanItemContainer<Tetel>(Tetel.class);
                     gridList.forEach(curTetel -> container.addItem(curTetel));
+                    tetelekGrid.setContainerDataSource(container);
                     tetel = new Tetel();
                     bind();
                 } catch (FieldGroup.CommitException e) {
@@ -158,7 +159,7 @@ public class VasarlasView extends VerticalLayout implements View {
         mentes.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                if(!dolgozoId.isEmpty()) {
+                if(!dolgozoId.isEmpty()&&tetelekGrid.getContainerDataSource().size()>0) {
                     Vasarlas vasarlas = new Vasarlas();
                     vasarlas.getTetelekSet().addAll((Collection<? extends Tetel>) tetelekGrid.getContainerDataSource().getItemIds());
                     vasarlas.getTetelekSet().forEach(tetel1 -> tetel1.setVasarlasId(vasarlas)); //azért kell mert a tételek (külön) táblába mentjük a tételeket, ahol jelölni kell, hogy melyik vásárláshoz tartoznak
@@ -176,8 +177,10 @@ public class VasarlasView extends VerticalLayout implements View {
                     vasarlasRepository.save(vasarlas);
                     tetelekGrid.getContainerDataSource().removeAllItems();
                     Notification.show("A vásárlás sikeres és rögzítésre került.", Notification.Type.HUMANIZED_MESSAGE);
-                }else{
+                }else if(dolgozoId.isEmpty()){
                     Notification.show("Válasszon dolgozót a vásárláshoz!",Notification.TYPE_HUMANIZED_MESSAGE);
+                }else{
+                    Notification.show("Vegye fel a vásárlás tételeit!",Notification.TYPE_HUMANIZED_MESSAGE);
                 }
             }
         });
