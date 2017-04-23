@@ -17,10 +17,10 @@ import java.io.Serializable;
 public class Tetel implements Serializable {
 
     @javax.persistence.Id
-    @GenericGenerator(name = "tetel_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = {@org.hibernate.annotations.Parameter(name = "tetel_seq", value = "tetel_seq"),
-                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")})
-    @GeneratedValue(generator = "tetel_seq", strategy = GenerationType.SEQUENCE)
+//    @GenericGenerator(name = "tetel_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+//            parameters = {@org.hibernate.annotations.Parameter(name = "tetel_seq", value = "tetel_seq"),
+//                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")})
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(unique = true,nullable = false)
     private Integer id;
 
@@ -30,11 +30,11 @@ public class Tetel implements Serializable {
 
     @NotNull// kötelező legyen kitölteni
     @ManyToOne
-    @Column(name = "termek_id")
+    @JoinColumn(name = "termek_id")
     private Termek termekId;
 
     @ManyToOne
-    @Column(name = "vasarlas_id")
+    @JoinColumn(name = "vasarlas_id")
     private Vasarlas vasarlasId;
 
     //az adatbázisba be nem kerülő field

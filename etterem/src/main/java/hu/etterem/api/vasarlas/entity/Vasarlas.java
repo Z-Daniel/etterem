@@ -18,10 +18,10 @@ import java.util.*;
 public class Vasarlas implements Serializable {
 
     @javax.persistence.Id
-    @GenericGenerator(name = "vasarlas_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = {@org.hibernate.annotations.Parameter(name = "vasarlas_seq", value = "vasarlas_seq"),
-                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")})
-    @GeneratedValue(generator = "vasarlas_seq", strategy = GenerationType.SEQUENCE)
+//    @GenericGenerator(name = "vasarlas_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+//            parameters = {@org.hibernate.annotations.Parameter(name = "vasarlas_seq", value = "vasarlas_seq"),
+//                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")})
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(unique = true,nullable = false)
     private Integer id;
 
@@ -33,7 +33,7 @@ public class Vasarlas implements Serializable {
     private Date vasarlasDatuma;
 
     @ManyToOne
-    @Column(name = "dolgozo_id")
+    @JoinColumn(name = "dolgozo_id")
     private Dolgozo dolgozoId;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "vasarlasId")

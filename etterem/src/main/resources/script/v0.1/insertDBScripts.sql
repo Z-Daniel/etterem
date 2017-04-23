@@ -1,4 +1,4 @@
-INSERT INTO public.termek(
+INSERT INTO termek(
 	id, termek_ar, termek_nev)
     VALUES (1, 200, 'Kávé'),
  	(2, 100, 'Ropi'),
@@ -10,7 +10,7 @@ INSERT INTO public.termek(
     	(8, 120, 'Pogácsa'),
                (9, 240, 'Pizza'),
                (10, 150, 'Süti');
-INSERT INTO public.dolgozo(
+INSERT INTO dolgozo(
 	id, dolgozo_nev)
 	VALUES (1, 'Géza'),
     		(2, 'László'),
