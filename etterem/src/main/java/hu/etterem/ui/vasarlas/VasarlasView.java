@@ -124,7 +124,8 @@ public class VasarlasView extends VerticalLayout implements View {
                     List<Tetel> gridList = new ArrayList<>();
                     gridList.addAll(container.getItemIds());
                     container = new BeanItemContainer<Tetel>(Tetel.class);
-                    gridList.forEach(curTetel -> container.addItem(curTetel));
+                    container.addAll(gridList);
+                    tetelekGrid.setContainerDataSource(container);
                     tetel = new Tetel();
                     bind();
                 } catch (FieldGroup.CommitException e) {
@@ -174,7 +175,7 @@ public class VasarlasView extends VerticalLayout implements View {
                     vasarlas.setVasarlasDatuma(new Date());
 
                     vasarlasRepository.save(vasarlas);
-                    tetelekGrid.getContainerDataSource().removeAllItems();
+                    container.removeAllItems();
                     Notification.show("A vásárlás sikeres és rögzítésre került.", Notification.Type.HUMANIZED_MESSAGE);
                 }else{
                     Notification.show("Válasszon dolgozót a vásárláshoz!",Notification.TYPE_HUMANIZED_MESSAGE);
