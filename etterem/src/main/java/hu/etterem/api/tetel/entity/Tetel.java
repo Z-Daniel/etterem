@@ -30,9 +30,11 @@ public class Tetel implements Serializable {
 
     @NotNull// kötelező legyen kitölteni
     @ManyToOne
+    @Column(name = "termek_id")
     private Termek termekId;
 
     @ManyToOne
+    @Column(name = "vasarlas_id")
     private Vasarlas vasarlasId;
 
     //az adatbázisba be nem kerülő field

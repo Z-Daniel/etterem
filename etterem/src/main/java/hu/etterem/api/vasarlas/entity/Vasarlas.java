@@ -33,6 +33,7 @@ public class Vasarlas implements Serializable {
     private Date vasarlasDatuma;
 
     @ManyToOne
+    @Column(name = "dolgozo_id")
     private Dolgozo dolgozoId;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "vasarlasId")
