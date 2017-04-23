@@ -5,12 +5,9 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
-import com.vaadin.ui.themes.ValoTheme;
 import hu.etterem.api.dolgozo.entity.Dolgozo;
-import hu.etterem.api.termek.entity.Termek;
 import hu.etterem.api.tetel.entity.Tetel;
 import hu.etterem.api.vasarlas.entity.Vasarlas;
 import hu.etterem.repository.dolgozo.DolgozoRepository;
@@ -38,7 +35,7 @@ public class VasarlasView extends VerticalLayout implements View {
 
     private BeanFieldGroup<Tetel> fieldGroup;
 
-    private  BeanItemContainer<Tetel> container;
+    private BeanItemContainer<Tetel> container;
 
     private ComboBox dolgozoId;
 
@@ -75,20 +72,20 @@ public class VasarlasView extends VerticalLayout implements View {
 
         root = new VerticalLayout(
                 formLayout = new HorizontalLayout(
-                    dolgozoId = new ComboBox(),
-                    termekId = new ComboBox(),
-                    darabSzam = new TextField("Darabszám: ")
+                        dolgozoId = new ComboBox(),
+                        termekId = new ComboBox(),
+                        darabSzam = new TextField("Darabszám: ")
                 ),
                 gombokEsGridLayout = new VerticalLayout(
-                    tetelGombokLayout = new HorizontalLayout(
-                        hozzaad = new Button("Hozzáadás/Módosítás"),
-                        torles = new Button("Törlés")
-                    ),
-                    tetelekGrid = new Grid("A felvett tételek: "),
-                    globalGombokLayout = new HorizontalLayout(
-                       mentes = new Button("Mentés"),
-                       osszesTorlese = new Button("Összes törlése")
-                    )
+                        tetelGombokLayout = new HorizontalLayout(
+                                hozzaad = new Button("Hozzáadás/Módosítás"),
+                                torles = new Button("Törlés")
+                        ),
+                        tetelekGrid = new Grid("A felvett tételek: "),
+                        globalGombokLayout = new HorizontalLayout(
+                                mentes = new Button("Mentés"),
+                                osszesTorlese = new Button("Összes törlése")
+                        )
                 )
         );
 
@@ -109,27 +106,33 @@ public class VasarlasView extends VerticalLayout implements View {
                     fieldGroup.commit();
                     List<Tetel> validateList = new ArrayList<>();
                     validateList.addAll(container.getItemIds());
-                    validateList.forEach(curTetel -> {
-                        if(curTetel.getTermekId() == tetel.getTermekId()){
-                            curTetel.setDarabSzam(curTetel.getDarabSzam() + tetel.getDarabSzam());
-                            found = true;
-                        }
-                    });
-                    if (!found){
-                        container.addItem(tetel);
-                    }else{
+                    /**
+                     * Itt kezeli azt, ha már létező tételfajtára módosítanak. (hozzáadja a másik létezőhöz a darabszámát.)
+                     * Ha nem volt kijelölés, tehát nem módosítás, hanem új tétel felvétele történik, akkor is ellenőrzi ezt
+                     * az alábbi foreach.
+                     */
+                    if (!tetelekGrid.getSelectedRows().isEmpty()) {
+                        Tetel ads = (Tetel) tetelekGrid.getSelectedRow();
+                        validateList.remove(ads);
+                    }
+                        validateList.forEach(curTetel -> {
+                            if (curTetel.getTermekId() == tetel.getTermekId() && found == false) {
+                                curTetel.setDarabSzam(curTetel.getDarabSzam() + tetel.getDarabSzam());
+                                found = true;
+                            }
+                        });
+                    if (!found) {
+                        validateList.add(tetel);
+                    } else {
                         found = false;
                     }
-                    tetelekGrid.setContainerDataSource(container);
-                    List<Tetel> gridList = new ArrayList<>();
-                    gridList.addAll(container.getItemIds());
                     container = new BeanItemContainer<Tetel>(Tetel.class);
-                    container.addAll(gridList);
+                    container.addAll(validateList);
                     tetelekGrid.setContainerDataSource(container);
                     tetel = new Tetel();
                     bind();
                 } catch (FieldGroup.CommitException e) {
-                    if(Integer.valueOf(darabSzam.getValue())<=0){
+                    if (Integer.valueOf(darabSzam.getValue()) <= 0) {
                         Notification.show("Csak nullánál nagyobb darabszámú tétel vehető fel!", Notification.Type.HUMANIZED_MESSAGE);
                     }
                     e.printStackTrace();
@@ -159,7 +162,7 @@ public class VasarlasView extends VerticalLayout implements View {
         mentes.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                if(!dolgozoId.isEmpty()) {
+                if (!dolgozoId.isEmpty()) {
                     Vasarlas vasarlas = new Vasarlas();
                     vasarlas.getTetelekSet().addAll((Collection<? extends Tetel>) tetelekGrid.getContainerDataSource().getItemIds());
                     vasarlas.getTetelekSet().forEach(tetel1 -> tetel1.setVasarlasId(vasarlas)); //azért kell mert a tételek (külön) táblába mentjük a tételeket, ahol jelölni kell, hogy melyik vásárláshoz tartoznak
@@ -177,8 +180,8 @@ public class VasarlasView extends VerticalLayout implements View {
                     vasarlasRepository.save(vasarlas);
                     container.removeAllItems();
                     Notification.show("A vásárlás sikeres és rögzítésre került.", Notification.Type.HUMANIZED_MESSAGE);
-                }else{
-                    Notification.show("Válasszon dolgozót a vásárláshoz!",Notification.TYPE_HUMANIZED_MESSAGE);
+                } else {
+                    Notification.show("Válasszon dolgozót a vásárláshoz!", Notification.TYPE_HUMANIZED_MESSAGE);
                 }
             }
         });
@@ -190,7 +193,7 @@ public class VasarlasView extends VerticalLayout implements View {
             }
         });
 
-        globalGombokLayout.setComponentAlignment(osszesTorlese,Alignment.MIDDLE_RIGHT);
+        globalGombokLayout.setComponentAlignment(osszesTorlese, Alignment.MIDDLE_RIGHT);
         root.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         addComponents(root);
     }
@@ -201,7 +204,7 @@ public class VasarlasView extends VerticalLayout implements View {
         fieldGroup.bind(darabSzam, "darabSzam");
     }
 
-    private void gridSetup(BeanItemContainer<Tetel> container){
+    private void gridSetup(BeanItemContainer<Tetel> container) {
         tetelekGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
         tetelekGrid.setContainerDataSource(container);
         tetelekGrid.removeAllColumns();
@@ -210,16 +213,16 @@ public class VasarlasView extends VerticalLayout implements View {
         tetelekGrid.setWidth("100%");
     }
 
-    private void layoutAdjustents(){
-        root.setComponentAlignment(gombokEsGridLayout,Alignment.MIDDLE_CENTER);
+    private void layoutAdjustents() {
+        root.setComponentAlignment(gombokEsGridLayout, Alignment.MIDDLE_CENTER);
         tetelGombokLayout.setWidth("100%");
-        tetelGombokLayout.setComponentAlignment(torles,Alignment.MIDDLE_RIGHT);
-        root.setComponentAlignment(formLayout,Alignment.MIDDLE_CENTER);
-        formLayout.setComponentAlignment(darabSzam,Alignment.MIDDLE_RIGHT);
-        formLayout.setComponentAlignment(termekId,Alignment.MIDDLE_CENTER);
-        formLayout.setComponentAlignment(dolgozoId,Alignment.MIDDLE_LEFT);
+        tetelGombokLayout.setComponentAlignment(torles, Alignment.MIDDLE_RIGHT);
+        root.setComponentAlignment(formLayout, Alignment.MIDDLE_CENTER);
+        formLayout.setComponentAlignment(darabSzam, Alignment.MIDDLE_RIGHT);
+        formLayout.setComponentAlignment(termekId, Alignment.MIDDLE_CENTER);
+        formLayout.setComponentAlignment(dolgozoId, Alignment.MIDDLE_LEFT);
         globalGombokLayout.setWidth("100%");
-        globalGombokLayout.setComponentAlignment(osszesTorlese,Alignment.MIDDLE_RIGHT);
+        globalGombokLayout.setComponentAlignment(osszesTorlese, Alignment.MIDDLE_RIGHT);
         gombokEsGridLayout.setWidth("90%");
         formLayout.setWidth("100%");
     }
