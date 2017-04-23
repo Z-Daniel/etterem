@@ -2,7 +2,6 @@ package hu.etterem.api.tetel.entity;
 
 import hu.etterem.api.termek.entity.Termek;
 import hu.etterem.api.vasarlas.entity.Vasarlas;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;

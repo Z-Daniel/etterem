@@ -13,7 +13,7 @@ import hu.etterem.riportEredm.RiportEredm;
 import hu.etterem.ui.main.MainUI;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.ByteArrayInputStream;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Calendar;
@@ -92,10 +92,17 @@ public class JelentesView extends VerticalLayout implements View {
                 List<Object[]> objectList = getObjectList(radioGombok.getValue().toString());
                 objectList.forEach(objects -> riportList.add(new RiportEredm(objects[0].toString(), Integer.valueOf(objects[1].toString()))));
 
-                if(riportList != null && !riportList.isEmpty()&&radioGombok.getValue() == "Dolgozó riport"){
-                    Page.getCurrent().open(new StreamResource((StreamResource.StreamSource) () -> new ByteArrayInputStream(csvContentAdapter().getBytes()), "ETTEREM_REPORT_" + getDate4CsvName() + "_DOLGOZO.csv"), null, false);
-                }else if(riportList != null && !riportList.isEmpty()&&radioGombok.getValue() == "Termék riport"){
-                    Page.getCurrent().open(new StreamResource((StreamResource.StreamSource) () -> new ByteArrayInputStream(csvContentAdapter().getBytes()), "ETTEREM_REPORT_" + getDate4CsvName() + "_TERMEK.csv"), null, false);
+                if(riportList !=null&&!riportList.isEmpty()) {
+                    try {
+                        ByteArrayInputStream inputStream = new ByteArrayInputStream(csvContentAdapter().getBytes("windows-1250"));
+                        if (radioGombok.getValue() == "Dolgozó riport") {
+                            Page.getCurrent().open(new StreamResource((StreamResource.StreamSource) () -> inputStream, "ETTEREM_REPORT_" + getDate4CsvName() + "_DOLGOZO.csv"), null, false);
+                        } else if (radioGombok.getValue() == "Termék riport") {
+                            Page.getCurrent().open(new StreamResource((StreamResource.StreamSource) () -> inputStream, "ETTEREM_REPORT_" + getDate4CsvName() + "_TERMEK.csv"), null, false);
+                        }
+                    }catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });

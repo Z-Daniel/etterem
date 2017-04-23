@@ -11,9 +11,11 @@ import java.util.List;
 
 /**
  * Created by Murdoc on 4/14/2017.
+ * A Termek entitás osztályhoz definiált JPA repo, a termek táblából betölti az objektumokat a VasarlasView-on található termekId legördülőbe.
  */
 @Repository
 public interface TermekRepository extends JpaRepository<Termek,Integer>{
     @Query(value = "SELECT p.termek_nev, SUM(i.darab_szam) FROM vasarlas v INNER JOIN tetel I ON v.id = i.vasarlas_id INNER JOIN termek p ON p.id = i.termek_id WHERE v.vasarlas_datum BETWEEN :curDate AND :endDate GROUP BY p.termek_nev",nativeQuery = true)
+
     List<Object[]> termekekFogyasa(@Param("curDate") Date curDate, @Param("endDate") Date endDate );
 }

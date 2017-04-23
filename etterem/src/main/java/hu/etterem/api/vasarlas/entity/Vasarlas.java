@@ -1,12 +1,9 @@
 package hu.etterem.api.vasarlas.entity;
 
 import hu.etterem.api.dolgozo.entity.Dolgozo;
-import hu.etterem.api.termek.entity.Termek;
 import hu.etterem.api.tetel.entity.Tetel;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.*;
 
