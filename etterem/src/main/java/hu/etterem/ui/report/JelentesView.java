@@ -20,7 +20,7 @@ import java.util.Calendar;
 import java.util.stream.Stream;
 
 /**
- * Created by Murdoc on 4/19/2017.
+ * Created by Zsidó Dániel on 4/19/2017.
  */
 @SpringView(name = JelentesView.VIEW_NAME, ui = MainUI.class)
 public class JelentesView extends VerticalLayout implements View {

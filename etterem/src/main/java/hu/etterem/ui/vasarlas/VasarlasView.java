@@ -22,29 +22,58 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by Murdoc on 4/14/2017.
- * TODO Annak az esetleges kezelése, hogy egy termékfajtát többször adnak a gridhez
+ * Created by Zsidó Dániel on 4/14/2017.
+ * A VásárlásView-n keresztül lehet felvenni egy új vásárlás tételeit.
  */
 @SpringView(name = VasarlasView.VIEW_NAME, ui = MainUI.class)
 public class VasarlasView extends VerticalLayout implements View {
 
+    /**
+     * A view name segítségévelhivatkozik rá a MainUi és érjük el egy gomb segítségével, melynek a felirata a caption.
+     */
     public static final String VIEW_NAME = "VASARLAS_VIEW";
     public static final String CAPTION = "Vásárlás";
 
+    /**
+     * A vásárlás egy tétele, amit a gridbe felvehet a felhasználó.
+     */
     private Tetel tetel = new Tetel();
 
+    /**
+     * A fieldGroup bindolja össze a megfelelő entitás propertyket a darabSzam szövegdoboz és a termekId legördülő tartalmával.
+     */
     private BeanFieldGroup<Tetel> fieldGroup;
 
+    /**
+     * A container tartalmazza a grid által megjelenített tételeket.
+     */
     private BeanItemContainer<Tetel> container;
 
+    /**
+     * A vásárlás entitáshoz, amit a mentes gombbal hoz létre a felhasználó, tartoznia kell egy dolgozónak,
+     * akit ebből a legördülőből választhat ki.
+     */
     private ComboBox dolgozoId;
 
+    /**
+     * Egy tételhez tartozó termékfajta kiválasztását célzó legördülő.
+     */
     private ComboBox termekId;
 
+    /**
+     * Egy tételhez tartozó, vásárolt darabszám megadását célzó szövegdoboz.
+     */
     private TextField darabSzam;
 
+    /**
+     * Jelzi, ha a felveendő új tétel, vagy a módosított tétel olyan termékfajtával rendelkezik, ami már
+     * szerepel a tétellistában.
+     */
     private boolean found = false;
 
+    /**
+     * Vaadinos felületi komponensek.
+     */
     private VerticalLayout root;
     private Grid tetelekGrid;
     private HorizontalLayout formLayout;
@@ -56,12 +85,21 @@ public class VasarlasView extends VerticalLayout implements View {
     private Button osszesTorlese;
     private VerticalLayout gombokEsGridLayout;
 
+    /**
+     * A termék tábla elérésére szolgáló interface.
+     */
     @Autowired
     private TermekRepository termekRepository;
 
+    /**
+     * A vásárlás táblát elérő interface.
+     */
     @Autowired
     private VasarlasRepository vasarlasRepository;
 
+    /**
+     * A dolgozó táblát elérő interface.
+     */
     @Autowired
     private DolgozoRepository dolgozoRepository;
 
@@ -69,7 +107,9 @@ public class VasarlasView extends VerticalLayout implements View {
     public void enter(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
 
         container = new BeanItemContainer<Tetel>(Tetel.class);
-
+        /**
+        * A View felépítése.
+        */
         root = new VerticalLayout(
                 formLayout = new HorizontalLayout(
                         dolgozoId = new ComboBox(),
@@ -89,16 +129,24 @@ public class VasarlasView extends VerticalLayout implements View {
                 )
         );
 
+        /**
+         * Felcímkézi a termekId legördülőt és a repository segítségével lekéri bele a termek tábla tartalmát.
+         */
         termekId.setCaption("Termék: ");
         termekId.addItems(termekRepository.findAll());
 
+        /**
+         * Felcímkézi a dolgozoId legördülőt és a repository segítségével lekéri bele a dolgozó tábla tartalmát.
+         */
         dolgozoId.setCaption("Vásárló: ");
         dolgozoId.addItems(dolgozoRepository.findAll());
 
-        //hozzárendeli az objektum fieldjeit a textfieldekhez (ezt minden új példányosításnál meg kell tenni)
         fieldGroup = new BeanFieldGroup<>(Tetel.class);
         bind();
 
+        /**
+         * A hozzáadás/módosítás gomb lenyomásával megtörténő utasítások.
+         */
         hozzaad.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
@@ -112,20 +160,23 @@ public class VasarlasView extends VerticalLayout implements View {
                      * az alábbi foreach.
                      */
                     if (!tetelekGrid.getSelectedRows().isEmpty()) {
-                        Tetel ads = (Tetel) tetelekGrid.getSelectedRow();
-                        validateList.remove(ads);
+                        Tetel modositottTetel = (Tetel) tetelekGrid.getSelectedRow();
+                        validateList.remove(modositottTetel);
                     }
-                        validateList.forEach(curTetel -> {
-                            if (curTetel.getTermekId() == tetel.getTermekId() && found == false) {
-                                curTetel.setDarabSzam(curTetel.getDarabSzam() + tetel.getDarabSzam());
-                                found = true;
-                            }
-                        });
+                    validateList.forEach(curTetel -> {
+                        if (curTetel.getTermekId() == tetel.getTermekId() && found == false) {
+                            curTetel.setDarabSzam(curTetel.getDarabSzam() + tetel.getDarabSzam());
+                            found = true;
+                        }
+                    });
                     if (!found) {
                         validateList.add(tetel);
                     } else {
                         found = false;
                     }
+                    /**
+                     * Az átmeneti validateList tartalmának betöltése a containerbe, és a container tartalmának betöltése a gridbe.
+                     */
                     container = new BeanItemContainer<Tetel>(Tetel.class);
                     container.addAll(validateList);
                     tetelekGrid.setContainerDataSource(container);
@@ -139,13 +190,17 @@ public class VasarlasView extends VerticalLayout implements View {
                 }
             }
         });
-
+        /**
+        * Kiválasztott tétel törlése a listából.
+        */
         torles.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent clickEvent) {
                 container.removeItem(tetel);
             }
         });
-
+        /**
+         * Ha a felhasználó kiválaszt egy tételt a gridből, akkor az belekerül a tetel objectbe.
+         */
         tetelekGrid.addSelectionListener(selectionEvent -> {
             if (tetelekGrid.getSelectedRow() != null) {
                 tetel = (Tetel) tetelekGrid.getSelectedRow();
@@ -158,34 +213,53 @@ public class VasarlasView extends VerticalLayout implements View {
 
         gridSetup(container);
         layoutAdjustents();
-
+        /**
+         * A mentés során létrejön a vásárlás entitás, amit itt fel kell építeni és a tételeket hozzá kell rendelni,
+         * a tétel gyűjteményt és a vásárlást menteni az adatbázisba.
+         */
         mentes.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                if (!dolgozoId.isEmpty()) {
+                if (!dolgozoId.isEmpty() && tetelekGrid.getContainerDataSource().size() > 0) {
                     Vasarlas vasarlas = new Vasarlas();
                     vasarlas.getTetelekSet().addAll((Collection<? extends Tetel>) tetelekGrid.getContainerDataSource().getItemIds());
-                    vasarlas.getTetelekSet().forEach(tetel1 -> tetel1.setVasarlasId(vasarlas)); //azért kell mert a tételek (külön) táblába mentjük a tételeket, ahol jelölni kell, hogy melyik vásárláshoz tartoznak
+                    /**
+                     * Itt tölti fel a tételeket a vásárlás azonosítójával.
+                     */
+                    vasarlas.getTetelekSet().forEach(tetel1 -> tetel1.setVasarlasId(vasarlas));
 
-                    //végösszeg kiszámítása úgy, hogy kikeresi a termék táblából a tételhez rendelt termék alapján az egységárat, beszorozza a tételhez tartozó mennyiséggel és hozzáadja a végösszeghez
+                    /**
+                     * A vásárlás rekordban feljegyzett végösszeg kiszámítása.
+                     */
                     Integer vegosszeg = 0;
                     for (Tetel curTetel : vasarlas.getTetelekSet()) {
-                        vegosszeg += curTetel.getDarabSzam() * curTetel.getTermekId().getAr();// nem kell felolvasni db-ből a tételben benne van a termék
+                        vegosszeg += curTetel.getDarabSzam() * curTetel.getTermekId().getAr();
                     }
-
                     vasarlas.setVegosszeg(vegosszeg);
+
+                    /**
+                     * A dolgozó és a mai dátum hozzárendelése a vásárláshoz.
+                     */
                     vasarlas.setDolgozoId((Dolgozo) dolgozoId.getValue());
                     vasarlas.setVasarlasDatuma(new Date());
 
+                    /**
+                     * A vásárlás mentése adatbázisba (a tételek is mentésre kerülnek a tetelekSeten keresztül).
+                     */
                     vasarlasRepository.save(vasarlas);
                     container.removeAllItems();
                     Notification.show("A vásárlás sikeres és rögzítésre került.", Notification.Type.HUMANIZED_MESSAGE);
-                } else {
+                } else if (dolgozoId.isEmpty()) {
                     Notification.show("Válasszon dolgozót a vásárláshoz!", Notification.TYPE_HUMANIZED_MESSAGE);
+                } else {
+                    Notification.show("Adjon tételeket a vásárláshoz!", Notification.TYPE_HUMANIZED_MESSAGE);
                 }
             }
         });
 
+        /**
+         * Minden tétel törlését lehetővé tévő gomb.
+         */
         osszesTorlese.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
@@ -198,12 +272,19 @@ public class VasarlasView extends VerticalLayout implements View {
         addComponents(root);
     }
 
+    /**
+     * Hozzárendeli az objektum fieldjeit a felület komponenseihez (ezt minden új, fieldgroup példányosításnál meg kell tenni).
+     */
     private void bind() {
         fieldGroup.setItemDataSource(tetel);
         fieldGroup.bind(termekId, "termekId");
         fieldGroup.bind(darabSzam, "darabSzam");
     }
 
+    /**
+     * A grid alap jellemzőinek beállítása.
+     * @param container a grid tartalmát meghatározó adatforrás
+     */
     private void gridSetup(BeanItemContainer<Tetel> container) {
         tetelekGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
         tetelekGrid.setContainerDataSource(container);
@@ -213,6 +294,9 @@ public class VasarlasView extends VerticalLayout implements View {
         tetelekGrid.setWidth("100%");
     }
 
+    /**
+     * A komponensek rendezgetését végző metódus.
+     */
     private void layoutAdjustents() {
         root.setComponentAlignment(gombokEsGridLayout, Alignment.MIDDLE_CENTER);
         tetelGombokLayout.setWidth("100%");
