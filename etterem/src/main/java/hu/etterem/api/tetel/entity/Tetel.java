@@ -9,21 +9,18 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
- * Created by Murdoc on 4/14/2017.
+ * Created by Zsidó Dániel on 4/14/2017.
  */
 @Entity
 @Table
 public class Tetel implements Serializable {
 
     @javax.persistence.Id
-//    @GenericGenerator(name = "tetel_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-//            parameters = {@org.hibernate.annotations.Parameter(name = "tetel_seq", value = "tetel_seq"),
-//                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")})
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(unique = true,nullable = false)
     private Integer id;
 
-    @Column
+    @Column(name = "darabszam")
     @Min(value = 1,message = "Csak nullánál nagyobb darabszámú tétel vehető fel!")
     private Integer darabSzam = 1;
 

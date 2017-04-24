@@ -1,15 +1,11 @@
 package hu.etterem.api.termek.entity;
 
-import hu.etterem.api.vasarlas.entity.Vasarlas;
-
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
- * Created by Murdoc on 4/14/2017.
+ * Created by Zsidó Dániel on 4/14/2017.
  */
 @Entity
 @Table

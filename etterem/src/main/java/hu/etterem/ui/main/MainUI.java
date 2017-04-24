@@ -14,7 +14,8 @@ import hu.etterem.ui.vasarlas.VasarlasView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Created by Murdoc on 4/14/2017.
+ * Created by Zsidó Dániel on 4/14/2017.
+ * A menü, illetve a main screen view felépítése.
  */
 @Title("Étterem üzemeltetés")
 @Theme("valo")
@@ -25,9 +26,6 @@ public class MainUI extends UI {
     @Autowired
     private SpringViewProvider viewProvider;
 
-//    @Autowired
-//    private SpringNavigator navigator;
-
     @Override
     protected void init(VaadinRequest vaadinRequest) {
         HorizontalLayout root = new HorizontalLayout();
@@ -37,17 +35,21 @@ public class MainUI extends UI {
         setContent(root);
 
         Panel viewContainer = new Panel();
-        viewContainer.setWidth(90,Unit.PERCENTAGE);
         viewContainer.setSizeFull();
 
+        /**
+         * A többi view-ra irányító gombok layout-ja.
+         */
         VerticalLayout menuLayout = new VerticalLayout();
-        menuLayout.setWidth(10,Unit.PERCENTAGE);
         menuLayout.addComponent(createNavigationButton(VasarlasView.CAPTION, VasarlasView.VIEW_NAME));
         menuLayout.addComponent(createNavigationButton(JelentesView.CAPTION, JelentesView.VIEW_NAME));
+        menuLayout.setWidth(10,Unit.PERCENTAGE);
 
         root.addComponents(menuLayout,viewContainer);
 
-        //név alapján navigál a view-ok között
+        /**
+         * Név alapján navigál a view-ok között.
+         */
         Navigator navigator = new Navigator(this,viewContainer);
         navigator.addProvider(viewProvider);
         navigator.navigateTo(EmptyView.VIEW_NAME);
@@ -55,6 +57,12 @@ public class MainUI extends UI {
 
     }
 
+    /**
+     * A gombok létrehozásáért felelős metódus.
+     * @param caption  a gomb felirata
+     * @param viewName a view neve, amire mutat a gomb
+     * @return
+     */
     private Button createNavigationButton(String caption, String viewName) {
         Button button = new Button(caption);
 

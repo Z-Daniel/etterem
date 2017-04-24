@@ -8,16 +8,13 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * Created by Murdoc on 4/14/2017.
+ * Created by Zsidó Dániel on 4/14/2017.
  */
 @Entity
 @Table
 public class Vasarlas implements Serializable {
 
     @javax.persistence.Id
-//    @GenericGenerator(name = "vasarlas_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-//            parameters = {@org.hibernate.annotations.Parameter(name = "vasarlas_seq", value = "vasarlas_seq"),
-//                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")})
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(unique = true,nullable = false)
     private Integer id;

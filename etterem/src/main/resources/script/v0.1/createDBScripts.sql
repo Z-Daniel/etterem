@@ -48,7 +48,7 @@ TABLESPACE pg_default;
 CREATE TABLE tetel
 (
     id integer NOT NULL,
-    darab_szam integer,
+    darabszam integer,
     termek_id integer,
     vasarlas_id integer,
     CONSTRAINT tetel_pkey PRIMARY KEY (id),
